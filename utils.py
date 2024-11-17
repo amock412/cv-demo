@@ -39,11 +39,6 @@ print("Loading model...")
 darknet = tf.keras.models.load_model(str(LOCAL_MODEL_PATH), compile=False)
 print("Model loaded successfully!")
 
-#model_path = DATA_ROOT / 'yolo.h5' #os.path.join(DATA_ROOT, 'yolo_weights.h5')
-url = 'https://storage.googleapis.com/inspirit-ai-data-bucket-1/Data/AI%20Scholars/Sessions%206%20-%2010%20(Projects)/Project%20-%20%20Object%20Detection%20(Autonomous%20Vehicles)/yolo.h5'
-
-#darknet = tf.keras.models.load_model(url, compile=False) #tf.keras.models.load_model(model_path, compile=False)
-
 labels = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", \
               "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", \
               "bird", "cat", "dog", "horse", "sheep", "cow", "elephant", "bear", "zebra", "giraffe", \
@@ -245,8 +240,9 @@ def do_nms(boxes_, nms_thresh, obj_thresh):
 def draw_boxes(image_, boxes, labels):
     image = image_.copy()
     image_w, image_h = image.size
-    font = ImageFont.truetype("/System/Library/Fonts/NewYorkItalic.ttf", 
-                    size=np.floor(3e-2 * image_h + 0.5).astype('int32'))
+    font = ImageFont.load_default()
+    #font = ImageFont.truetype("/System/Library/Fonts/NewYorkItalic.ttf", 
+                   # size=np.floor(3e-2 * image_h + 0.5).astype('int32'))
     thickness = (image_w + image_h) // 300
 
     # Generate colors for drawing bounding boxes.
