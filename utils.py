@@ -6,14 +6,43 @@ from copy import deepcopy
 from PIL import ImageDraw, ImageFont
 import colorsys
 from pathlib import Path
+import requests
 
 anchors = [[[116,90], [156,198], [373,326]], [[30,61], [62,45], [59,119]], [[10,13], [16,30], [33,23]]]
 
+#DATA_ROOT = Path(__file__).resolve().parent
+
+# Define the URL of your model
+MODEL_URL = 'https://storage.googleapis.com/inspirit-ai-data-bucket-1/Data/AI%20Scholars/Sessions%206%20-%2010%20(Projects)/Project%20-%20%20Object%20Detection%20(Autonomous%20Vehicles)/yolo.h5'
+
+# Define local path to save the model
 DATA_ROOT = Path(__file__).resolve().parent
+LOCAL_MODEL_PATH = DATA_ROOT / 'yolo.h5'
 
-model_path = DATA_ROOT / 'yolo.h5' #os.path.join(DATA_ROOT, 'yolo_weights.h5')
+def download_file(url, local_path):
+    with requests.get(url, stream=True) as r:
+        r.raise_for_status()
+        with open(local_path, 'wb') as f:
+            for chunk in r.iter_content(chunk_size=8192):
+                f.write(chunk)
 
-darknet = tf.keras.models.load_model(model_path, compile=False)
+# Download the model if it doesn't exist locally
+if not LOCAL_MODEL_PATH.exists():
+    print("Downloading model...")
+    download_file(MODEL_URL, LOCAL_MODEL_PATH)
+    print(f"Model saved to {LOCAL_MODEL_PATH}")
+else:
+    print("Model already exists locally.")
+
+# Load the model from the local file
+print("Loading model...")
+darknet = tf.keras.models.load_model(str(LOCAL_MODEL_PATH), compile=False)
+print("Model loaded successfully!")
+
+#model_path = DATA_ROOT / 'yolo.h5' #os.path.join(DATA_ROOT, 'yolo_weights.h5')
+url = 'https://storage.googleapis.com/inspirit-ai-data-bucket-1/Data/AI%20Scholars/Sessions%206%20-%2010%20(Projects)/Project%20-%20%20Object%20Detection%20(Autonomous%20Vehicles)/yolo.h5'
+
+#darknet = tf.keras.models.load_model(url, compile=False) #tf.keras.models.load_model(model_path, compile=False)
 
 labels = ["person", "bicycle", "car", "motorbike", "aeroplane", "bus", "train", "truck", \
               "boat", "traffic light", "fire hydrant", "stop sign", "parking meter", "bench", \
